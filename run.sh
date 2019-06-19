@@ -20,7 +20,8 @@ IMAGE_PREDICTIONS_PATH='sample_output/image_predictions.csv'
 IMAGEHEATMAPS_PREDICTIONS_PATH='sample_output/imageheatmaps_predictions.csv'
 export PYTHONPATH=$(pwd):$PYTHONPATH
 
-echo 'Stage 1: Crop Mammograms'
+echo 'Mamopixel by Mohamed Ndiaye, Goumbala & Kebe '
+echo 'Stage 1: Croping des Mammogrammes'
 python3 src/cropping/crop_mammogram.py \
     --input-data-folder $DATA_FOLDER \
     --output-data-folder $CROPPED_IMAGE_PATH \
@@ -28,14 +29,14 @@ python3 src/cropping/crop_mammogram.py \
     --cropped-exam-list-path $CROPPED_EXAM_LIST_PATH  \
     --num-processes $NUM_PROCESSES
 
-echo 'Stage 2: Extract Centers'
+echo 'Stage 2: Extraction des centres'
 python3 src/optimal_centers/get_optimal_centers.py \
     --cropped-exam-list-path $CROPPED_EXAM_LIST_PATH \
     --data-prefix $CROPPED_IMAGE_PATH \
     --output-exam-list-path $EXAM_LIST_PATH \
     --num-processes $NUM_PROCESSES
 
-echo 'Stage 3: Generate Heatmaps'
+echo 'Stage 3: Petites préparations'
 python3 src/heatmaps/run_producer.py \
     --model-path $PATCH_MODEL_PATH \
     --data-path $EXAM_LIST_PATH \
@@ -45,7 +46,7 @@ python3 src/heatmaps/run_producer.py \
     --device-type $DEVICE_TYPE \
     --gpu-number $GPU_NUMBER
 
-echo 'Stage 4a: Run Classifier (Image)'
+echo 'Stage 4a: Classification en cours (Image)'
 python3 src/modeling/run_model.py \
     --model-path $IMAGE_MODEL_PATH \
     --data-path $EXAM_LIST_PATH \
@@ -56,15 +57,4 @@ python3 src/modeling/run_model.py \
     --device-type $DEVICE_TYPE \
     --gpu-number $GPU_NUMBER
 
-echo 'Stage 4b: Run Classifier (Image+Heatmaps)'
-python3 src/modeling/run_model.py \
-    --model-path $IMAGEHEATMAPS_MODEL_PATH \
-    --data-path $EXAM_LIST_PATH \
-    --image-path $CROPPED_IMAGE_PATH \
-    --output-path $IMAGEHEATMAPS_PREDICTIONS_PATH \
-    --use-heatmaps \
-    --heatmaps-path $HEATMAPS_PATH \
-    --use-augmentation \
-    --num-epochs $NUM_EPOCHS \
-    --device-type $DEVICE_TYPE \
-    --gpu-number $GPU_NUMBER
+echo 'images classifiées avec succès, le resultat se trouve dans le fichier predict.csv'
